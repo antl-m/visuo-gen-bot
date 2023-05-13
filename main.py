@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import aiogram
 
 from os import getenv
@@ -25,23 +24,23 @@ class BotState(StatesGroup):
 
 @dp.message_handler(commands=['txt2img'])
 async def txt2img_handler(message: Message):
-    await message.answer('Input prompt')
     await BotState.txt2img_prompt_wait.set()
+    await message.answer('Enter prompt')
 
-@dp.message_handler(state=BotState.txt2img_prompt_wait, content_types=aiogram.types.ContentType.TEXT)
+@dp.message_handler(state=BotState.txt2img_prompt_wait)
 async def txt2img_prompt_handler(message: Message, state: FSMContext):
     try:
         await BotState.generation_in_progress.set()
         await message.answer('Ok, image generation in progress')
         await message.answer_photo(await txt2img_async(message.text))
-    except:
-        await message.answer(f'Error occured during generation, try later')
+    except Exception as ex:
+        await message.answer(f'Error occured during generation, try later:\n{str(ex)}')
     finally:
         await state.reset_state()
 
 @dp.message_handler(commands=['txt2gif'])
 async def txt2gif_handler(message: Message):
-    await message.answer('Input prompt')
+    await message.answer('Enter prompt')
     await BotState.txt2gif_prompt_wait.set()
 
 @dp.message_handler(state=BotState.txt2gif_prompt_wait, content_types=aiogram.types.ContentType.TEXT)
