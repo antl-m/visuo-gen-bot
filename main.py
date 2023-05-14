@@ -22,6 +22,15 @@ class BotState(StatesGroup):
     txt2gif_prompt_wait = State()
     generation_in_progress = State()
 
+@dp.message_handler(commands=['start', 'help'])
+async def start_handler(message: Message):
+    await message.answer("Hi! I'm VisuoGenBot and I can generate"
+                         " some stunning images for you.\n\n"
+                         "Use one of following commands to try me:\n"
+                         "/txt2img - generates image based on text prompt;\n"
+                         "/txt2gif - generates animation of image creation based on text prompt;\n\n"
+                         "Choose one of the commands and enter text prompt after it.")
+
 @dp.message_handler(commands=['txt2img'])
 async def txt2img_handler(message: Message):
     await BotState.txt2img_prompt_wait.set()
@@ -64,6 +73,8 @@ async def set_commands():
     await bot.set_my_commands([
         BotCommand('txt2img', 'Generate image from text'),
         BotCommand('txt2gif', 'Create gif of image generation progress'),
+        BotCommand('help', 'Get help'),
+        BotCommand('start', 'Start conversation with bot'),
     ])
 
 if __name__ == '__main__':
